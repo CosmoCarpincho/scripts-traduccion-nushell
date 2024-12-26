@@ -1,0 +1,2 @@
+# scripts-traduccion-nushell
+scripts
