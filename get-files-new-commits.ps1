@@ -20,8 +20,11 @@ param(
   [Parameter(Mandatory=$true)]
   [ValidateNotNullOrEmpty()]
   [string]
-  $TargetDate,
+  $InitDate,
 
+  [string]
+  $EndDate,
+  
   [Parameter(Mandatory=$true)]
   [ValidateNotNullOrEmpty()]
   [string]
@@ -51,13 +54,17 @@ Set-Location -Path $RepositoryPath
 Write-Host $InternalPath
 
 #ga de git ar"guments
-$gaLogs = @('log', "--since=$TargetDate", '--name-only', '--pretty=format:""', '--', "$InternalPath")
+$gaLogs = [System.Collections.ArrayList]@('log', "--since=$InitDate", '--name-only', '--pretty=format:""', '--', "$InternalPath")
+
+if ($null -ne $EndDate) {
+  $gaLogs.Insert(2, "--until=$EndDate")
+}
 
 $logs = git $gaLogs
 
 $filteredLogs = $logs | Where-Object { $_ -ne "" -and $_ -ne '""'} | Sort-Object -Unique
 
-Write-Host "Archivos modificados desde $TargetDate en $completePath :" -ForegroundColor Green
+Write-Host "Archivos modificados desde $InitDate en $completePath :" -ForegroundColor Green
 $filteredLogs
 
 # Devuelve al directorio original
